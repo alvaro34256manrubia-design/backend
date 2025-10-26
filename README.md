@@ -10,9 +10,3 @@ Este proyecto es una **aplicación backend** desarrollada con **Django** como fr
 - **Pip** → Gestor de paquetes de Python para la instalación de dependencias.
 - **Tailwind CSS** → Framework de utilidades CSS para un diseño moderno, rápido y personalizable.
 
----
-
-## ⚙️ Instalación y configuración
-
-### 1. Clonar el repositorio
-```bash
