@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+{% load static tailwind_tags %}
+<html lang="es">
+
+    <head>
+        <title>
+            {% block title %}
+            default content
+            {% endblock %}
+        </title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <script src="{% static 'js/main.js' %}"></script>
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        {% tailwind_css %}
+
+    </head>
+
+    <body class="grid min-h-screen gap-6 flex-col items-center justify-center bg-gray-50 text-black font-serif leading-normal tracking-normal">
+        <nav><a href="/">Home</a> <a href="/pliope">criticar</a></nav>
+        <main>
+            {% block content %}
+            default content
+            {% endblock content %}
+            <img src="{% static 'images/python.jpg' %}">
+            <footer>hola nacho</footer>
+            
+        </main>
+
+    </body>
+
+</html>

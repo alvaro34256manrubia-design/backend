@@ -1,0 +1,15 @@
+{% load static %}
+{% load static tailwind_tags %}
+
+<html>
+    <head>
+        <title>{{ person.name }}</title>
+        <nav class= bg-gray-50 text-black><a href="{% url 'home' %}">Volver al inicio</a></nav>
+    </head>
+    <body>
+        <h1>{{ person.name }}</h1>
+        <p><strong>Fecha de nacimiento:</strong> {{ person.birth }}</p>
+        <p><strong>Descripción:</strong> {{ person.description }}</p>
+        <img src="{{ person.propic.url }}" />
+    </body>
+</html>

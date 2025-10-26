@@ -1,0 +1,47 @@
+{% load static %}
+{% load static tailwind_tags %}
+
+<html lang="es">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=, initial-scale=1.0">
+        <title>Document</title>
+        <script src ="https://cdn.tailwindcss.com"></script>
+        <script> 
+            
+            tailwind.config = {
+            darkMode: 'class' 
+            }
+        </script>
+    <script src = "{% static 'js/main.js' %}"></script>
+        {% tailwind_css %}
+
+    </head>
+
+    <body class="grid min-h-screen gap-6 flex-col items-center justify-center dark:bg-black dark:text-white transition-colors duration-500"> 
+        <nav class=" bg-violet-600"><a class='mr-4' href="{% url "home" %}">Home</a> <a href="/pliope">criticar</a></nav>
+        <main class="grid place-items-center ">
+            <img src="{% static 'images/python.jpg' %}" class="rounded-3xl">
+            <h1 class="text-3xl font-bold gap-2">pagina de registro</h1>
+            <p class="text-lg gap-2">this is a text of example</p>
+            <button id="modoBtn" 
+                class="bg-blue-500 hover:bg-red-500 text-white font-bold py-2 px-4 rounded transition-colors duration-300">
+                click para cambiar
+            </button>   
+            <ul>
+                {% for person in person_list %}
+                    <li>
+                        <a href="{% url 'people:person' slug=person.slug %}">
+                            {{ person.name }} ({{ person.birth }})
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+
+
+        </main>
+        <footer class="bg-amber-700 text-shadow-black has-hover:fill-blue-700">Creating a New World</footer>
+    </body>
+
+</html>
