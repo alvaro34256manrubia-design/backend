@@ -4,12 +4,8 @@ from django.contrib.auth.forms import UserCreationForm
 
 
 def users(request):
-    return render(request, 'register.html')
+    return render(request, 'users.html')
 
-
-def register_view(request):
-    form = UserCreationForm()
-    return render(request, 'users/register.html', {'form': form })
 
 def register_view(request):
     if request.method == 'POST':
@@ -19,5 +15,5 @@ def register_view(request):
         return redirect("users:home")
     else:
         form = UserCreationForm()
-    return render(request, 'users/register.html', {'form': form })
+    return render(request, 'register.html', {'form': form })
 
