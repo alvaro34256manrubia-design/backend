@@ -38,8 +38,13 @@
                     </li>
                 {% endfor %}
             </ul>
-
-
+            <h1 class="text-3xl font-[Times New Roman]">REGISTRO</h1>
+            <form class='text-center' action='/users/register/' method='post'>
+                {% csrf_token %}
+                {{ form }}
+                <button type=”submit”>Submit form!</button>
+            </form>
+            
         </main>
         <footer class="bg-amber-700 text-shadow-black has-hover:fill-blue-700">Creating a New World</footer>
     </body>

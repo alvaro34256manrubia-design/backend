@@ -32,6 +32,7 @@ urlpatterns = [
     path('pliope/', include('pliope.urls')),
     path("ejemplopersona", views.homepage),
     path("__reload__/", include("django_browser_reload.urls")),
+    path('users/', include('Users.urls')),
     
 ]
 urlpatterns += static(settings.MEDIA_URL,
