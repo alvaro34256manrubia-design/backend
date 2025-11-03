@@ -30,6 +30,19 @@
                 <button class="hover:underline">Logout</button>
             </form>
 
+
+            {% if user.is_authenticated %}
+                <div class="text-left">
+            <a class="mr-4" href="{% url 'products:list' %}">Products!</a>
+                </div>
+            {% else %}
+                <div class="text-right">
+            <a class="mr-4" href="{% url 'users:login' %}">Login</a>
+                </div>
+            {% endif %}
+
+
+                
         </nav>
         
         
