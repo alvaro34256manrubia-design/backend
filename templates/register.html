@@ -1,20 +1,7 @@
-<!DOCTYPE html>
-<html lang="es">
+<h1 class="text-8xl font-[Times New Roman]">Register form!</h1>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Usuario</title>
-</head>
-
-<body>
-    <h1>Formulario de Registro</h1>
-    <form action="#" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Registrar</button>
-    </form>
-    
-</body>
-
-</html>
+<form class="text-center" method="post" action="{% url 'users:register' %}">
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit">Submit form!</button>
+</form>
