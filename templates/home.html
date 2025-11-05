@@ -5,7 +5,7 @@
 
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Document</title>
         <script src ="https://cdn.tailwindcss.com"></script>
         <script> 
@@ -21,19 +21,19 @@
 
     <body class="grid min-h-screen gap-6 flex-col items-center justify-center dark:bg-black dark:text-white transition-colors duration-500"> 
         <nav class=" bg-violet-600 text-2xl font-bold p-4 rounded-lg flex justify-between items-center w-full">
-            <a class='mr-4' href="{% url "home" %}">Home</a> 
+            <a class="mr-4" href="{% url 'home' %}">Home</a>
             <a href="/pliope">criticar</a>
             <p>,</p>
             <span class="p-4">Hola!! {{ user.username }} </span>
             <form action="{% url 'users:logout' %}" method="post">
                 {% csrf_token %}
-                <button class="hover:underline">Logout</button>
+                <button class=" p-3.5 hover:underline">Logout</button>
             </form>
 
 
             {% if user.is_authenticated %}
                 <div class="text-left">
-            <a class="mr-4" href="{% url 'products:list' %}">Products!</a>
+                <a class="mr-4" href="{% url 'productos:lista' %}">Productos</a>
                 </div>
             {% else %}
                 <div class="text-right">

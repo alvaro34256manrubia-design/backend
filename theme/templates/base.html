@@ -1,33 +1,31 @@
-<!DOCTYPE html>
-{% load static tailwind_tags %}
+{% load static %}
+{% load tailwind_tags %}
 <html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Mi Sitio{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    {% tailwind_css %}
+</head>
 
-    <head>
-        <title>
-            {% block title %}
-            default content
-            {% endblock %}
-        </title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <script src="{% static 'js/main.js' %}"></script>
-        <link rel="stylesheet" href="{% static 'css/style.css' %}">
-        {% tailwind_css %}
+<body class="min-h-screen bg-gray-50 text-gray-900 dark:bg-black dark:text-white transition-colors duration-300">
+    <nav class="bg-violet-600 p-4 flex justify-between items-center text-white">
+        <a href="{% url 'home' %}" class="font-bold text-xl">Inicio</a>
+        <div class="space-x-4">
+            <a href="/pliope/" class="hover:underline">Personas</a>
+            <a href="/users/login/" class="hover:underline">Login</a>
+            <a href="/users/register/" class="hover:underline">Registro</a>
+        </div>
+    </nav>
 
-    </head>
+    <main class="p-6">
+        {% block content %}
+        {% endblock %}
+    </main>
 
-    <body class="grid min-h-screen gap-6 flex-col items-center justify-center bg-gray-50 text-black font-serif leading-normal tracking-normal">
-        <nav><a href="/">Home</a> <a href="/pliope">criticar</a></nav>
-        <main>
-            {% block content %}
-            default content
-            {% endblock content %}
-            <img src="{% static 'images/python.jpg' %}">
-            <footer>hola nacho</footer>
-            
-        </main>
-
-    </body>
-
+    <footer class="bg-amber-700 text-white text-center py-3 mt-8">
+        Creating a New World
+    </footer>
+</body>
 </html>

@@ -1,15 +1,9 @@
-{% load static %}
-{% load static tailwind_tags %}
-
-<html>
-    <head>
-        <title>{{ person.name }}</title>
-        <nav class= bg-gray-50 text-black><a href="{% url 'home' %}">Volver al inicio</a></nav>
-    </head>
-    <body>
-        <h1>{{ person.name }}</h1>
+{% extends "base.html" %}
+{% block title %}{{ person.name }}{% endblock %}
+{% block content %}
+    <div class="p-6">
+        <h1 class="text-3xl font-bold">{{ person.name }}</h1>
         <p><strong>Fecha de nacimiento:</strong> {{ person.birth }}</p>
-        <p><strong>Descripción:</strong> {{ person.description }}</p>
-        <img src="{{ person.propic.url }}" />
-    </body>
-</html>
+        <img src="{{ person.propic.url }}" alt="{{ person.name }}" class="rounded-lg w-64 h-64 object-cover my-4">
+    </div>
+{% endblock %}

@@ -1,6 +1,8 @@
 from django import forms
 from . import models
-class UploadProduct(forms.ModelForm):
+
+
+class UploadProductos(forms.ModelForm):
     class Meta:
-        model = models.Post
+        model = models.Productos
         fields = ['name','price','description','category']

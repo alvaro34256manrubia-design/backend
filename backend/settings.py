@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'pliope',
     'Users',
     'tailwind',
+    'Productos',
     'theme',
     'django_browser_reload',
 ]
