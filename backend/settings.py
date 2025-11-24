@@ -44,6 +44,10 @@ INSTALLED_APPS = [
     'Productos',
     'theme',
     'django_browser_reload',
+    'games',
+    'channels',
+    'daphne',
+    
 ]
 
 MIDDLEWARE = [
@@ -140,3 +144,11 @@ NPM_BIN_PATH = "C:/Program Files/nodejs/npm.cmd"
 
 MEDIA_URL = 'Media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'Media')
+
+ASGI_APPLICATION = 'backend.asgi.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
