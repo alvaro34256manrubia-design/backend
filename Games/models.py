@@ -1,54 +1,58 @@
 from django.db import models
 from django.contrib.auth.models import User
+# Create your models here.
 
-class TicTacToeGame(models.Model):
-    GAME_STATES = [
-        ('active', 'Activo'),
-        ('won_p1', 'Ganó Jugador 1'),
-        ('won_p2', 'Ganó Jugador 2'),
-        ('tie', 'Empate'),
-    ]
-    
+class Game(models.Model):
     room_name = models.CharField(max_length=100, unique=True)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owned_games')
-    player2 = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='joined_games')
-    
-    # Tablero: lista de 9 elementos (X, O, o vacío)
-    board = models.JSONField(default=list)
-    
-    active_player = models.CharField(max_length=1, default='X')  # X o O
-    game_state = models.CharField(max_length=10, choices=GAME_STATES, default='active')
-    created_at = models.DateTimeField(auto_now_add=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owner_games')
+    player2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='player2_games', blank=True, null=True)
+    board = models.CharField(max_length=9, default="-" * 9)
+    active_player = models.IntegerField(default=1)
+    winner = models.CharField(max_length=10, blank=True, null=True)
+    current_player = models.IntegerField(default=1)
+    over = models.BooleanField(default=False)
     
     def __str__(self):
-        return f"TicTacToe - {self.room_name}"
+        return self.room_name
     
-    def save(self, *args, **kwargs):
-        if not self.board:
-            self.board = [''] * 9  # Tablero vacío de 3x3
-        super().save(*args, **kwargs)
+    def make_move(self, user, position):
+        if self.over or self.board[position] != "-": 
+            return False
+        if self.active_player == 1 and user == self.owner:
+            token = 'X'
+        elif self.active_player == 2 and user == self.player2:
+            token = 'O'
+        else:
+            return False
+
+        board_list = list(self.board)
+        board_list[position] = token
+        self.board = "".join(board_list)
+        
+        winner_token = self.check_winner()
+        if winner_token:
+            self.winner = self.owner.username if winner_token == 'X' else self.player2.username
+            self.over = True
+        elif "-" not in self.board:
+            self.winner = "Empate"
+            self.over = True
+        else:
+            self.active_player = 2 if self.active_player == 1 else 1
+            
+        self.save()
+        return True
     
     def check_winner(self):
-        # Combinaciones ganadoras
-        winning_combinations = [
-            [0, 1, 2], [3, 4, 5], [6, 7, 8],  # Filas
-            [0, 3, 6], [1, 4, 7], [2, 5, 8],  # Columnas
-            [0, 4, 8], [2, 4, 6]              # Diagonales
+        wins = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],  # filas
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],  # columnas
+            [0, 4, 8], [2, 4, 6]              # diagonales
         ]
-        
-        for combo in winning_combinations:
-            if (self.board[combo[0]] == self.board[combo[1]] == self.board[combo[2]] != ''):
-                return self.board[combo[0]]
+        b= self.board
+        for line in wins:
+            a, b1, c = line
+            if b[a] != "-" and b[a] == b[b1] == b[c]:
+                return b[a]
         return None
-    
-    def is_board_full(self):
-        return '' not in self.board
-
-class GameMessage(models.Model):
-    game = models.ForeignKey(TicTacToeGame, on_delete=models.CASCADE, related_name='messages')
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    message = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
-    
-    class Meta:
-        ordering = ['timestamp']
+            
+            

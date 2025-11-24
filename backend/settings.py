@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'daphne',
     'django.contrib.staticfiles',
     'pliope',
     'Users',
@@ -44,9 +45,9 @@ INSTALLED_APPS = [
     'Productos',
     'theme',
     'django_browser_reload',
-    'games',
+    'Games',
     'channels',
-    'daphne',
+    
     
 ]
 
@@ -149,6 +150,9 @@ ASGI_APPLICATION = 'backend.asgi.application'
 
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
-    }
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },      
 }
