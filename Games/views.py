@@ -11,7 +11,7 @@ def games_list(request):
         if room_name:
             Game.objects.create(room_name=room_name, owner=request.user)
             return redirect('games:game_detail', room_name=room_name)
-    return render(request, 'games/list.html', {'games':games})
+    return render(request, 'games/games_list.html', {'games':games})
 
 @login_required
 def game_detail(request, room_name):

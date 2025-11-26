@@ -22,14 +22,17 @@
                         Pliope
                     </a>
                 </div>
-
+                <div    class="hidden md:flex items-center space-x-6">    
+                    <a href="{% url 'Games:games_list' %}" class="font-semibold text-gray-700 hover:text-green-600 transition-colors flex items-center space-x-2">
+                        <span>Juegos</span>
+                    </a>
+                </div>
                 <div class="hidden md:flex items-center space-x-6">
                     <a href="{% url 'people:lista' %}" class="font-semibold text-gray-700 hover:text-blue-600 transition-colors flex items-center space-x-2">
                         <span>Personas</span>
                     </a>
                     {% if user.is_authenticated %}
                     <a href="{% url 'productos:lista' %}" class="font-semibold text-gray-700 hover:text-purple-600 transition-colors flex items-center space-x-2">
-                        
                         <span>Productos</span>
                     </a>
                     {% endif %}

@@ -35,7 +35,7 @@ urlpatterns = [
     path("__reload__/", include("django_browser_reload.urls")),
     path('users/', include('Users.urls')),
     path('productos/', include('Productos.urls')),
-    path('games/', include('Games.urls')),
+    path('Games/', include('Games.urls')),
     
 ]
 urlpatterns += static(settings.MEDIA_URL,
