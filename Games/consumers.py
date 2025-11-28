@@ -38,6 +38,8 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.room_id = self.scope['url_route']['kwargs']['room_id']
         self.room_group_id = f'game_{self.room_id}'
         
+        
+        # Join room group
         await self.channel_layer.group_add(
             self.room_group_id,
             self.channel_name
@@ -54,10 +56,14 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.room_group_id,
             self.channel_name
         )
-    
+        
+        
+    # receive message from WebSocket
     async def receive(self, text_data):
         data = json.loads(text_data)
         game = await get_game(self.room_id)
+        
+        #Game logic
        
         if 'move' in data and 'user' in data: # comprobacion de usuario y movimiento
             user = await get_user(data['user'])

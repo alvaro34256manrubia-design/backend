@@ -97,10 +97,7 @@
 
             <div class="grid grid-cols-3 gap-3 max-w-md mx-auto mb-6">
                 {% for square in board %}
-                <form method="post" class="aspect-square">
-                    {% csrf_token %}
-                    <input type="hidden" name="square" value="{{ forloop.counter0 }}">
-                    <button type="submit" 
+                    <button name="square" value="{{ forloop.counter0 }}"
                             class="w-full h-full border-2 rounded-lg text-4xl font-bold transition-all duration-200
                                    {% if square == 'X' %}text-blue-600 bg-blue-50 border-blue-300
                                    {% elif square == 'O' %}text-green-600 bg-green-50 border-green-300
@@ -112,7 +109,6 @@
                         {% elif square == 'O' %}⭕
                         {% else %}&nbsp;{% endif %}
                     </button>
-                </form>
                 {% endfor %}
             </div>
 
@@ -191,26 +187,60 @@
 </div>
 
 
+
+{{ game.room_name |json_script:"room_data_json" }}
 <script>
-    {% if not game.over %}
-    setTimeout(function() {
-        window.location.reload();
-    }, 5000);
-    {% endif %}
+    const usable_data = JSON.parse(document.getElementById('room_data_json').textContent);
+</script>
+
+<script>
+    const user_id = {{ user.id }};
+    const roomName = "{{ game.room_name }}";
+    const gameSocket = new WebSocket(
+        'ws://' + window.location.host +
+        '/ws/tictactoe/' + roomName + '/'
+    );
+
+    gameSocket.onopen = function(e) {
+        console.log("Connected to socket.");
+    };
+
+    gameSocket.onmessage = function(e) {
+        const received = JSON.parse(e.data);
+        if (received.game_state) {
+            console.log("Estado recibido: ", received.game_state);
+            const boardArr = received.game_state.board.split('');
+            document.querySelectorAll('.move-btn').forEach((btn, i) => {
+                btn.textContent = boardArr[i];
+            });
+            
+            document.querySelector('.mb-6').textContent = "Jugador actual: " + received.game_state.active_player;
+            
+            if (received.game_state.over) {
+                document.getElementById('winnerMsg').textContent = "Ganador: " + received.game_state.winner;
+                document.getElementById('deletePanel').style.display = 'block';
+            } else {
+                document.getElementById('winnerMsg').textContent = " ";
+                document.getElementById('deletePanel').style.display = 'none';
+            }
+            console.log("Nuevo estado recibido: ", received.game_state);
+        };
+    };
+
+    document.querySelectorAll('.move-btn').forEach(btn => {
+    btn.onclick = function(e) {
+        e.preventDefault();
+        if (gameSocket.readyState === WebSocket.OPEN) {
+            gameSocket.send(JSON.stringify({
+                'move': btn.value,
+                'user': user_id
+            }));
+        } else {
+            alert("Conexión perdida con el servidor. Recarga la página.");
+        }
+        };
+    });
 
     
-    document.addEventListener('DOMContentLoaded', function() {
-        const buttons = document.querySelectorAll('button[type="submit"]');
-        buttons.forEach(button => {
-            if (!button.disabled) {
-                button.addEventListener('mouseenter', function() {
-                    this.style.transform = 'scale(1.05)';
-                });
-                button.addEventListener('mouseleave', function() {
-                    this.style.transform = 'scale(1)';
-                });
-            }
-        });
-    });
 </script>
 {% endblock %}
