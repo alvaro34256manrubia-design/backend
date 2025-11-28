@@ -1,56 +1,76 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Game 
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.db.models import Q
 
-# Create your views here.
 @login_required
 def games_list(request):
-    games = Game.objects.all()
+    # Obtener todas las salas activas y del usuario
+    games = Game.objects.all().order_by('-id')
+    
     if request.method == "POST":
-        room_name = request.POST.get("room_name")
+        room_name = request.POST.get("room_name", "").strip()
         if room_name:
-            Game.objects.create(room_name=room_name, owner=request.user)
-            return redirect('games:game_detail', room_name=room_name)
-    return render(request, 'games/games_list.html', {'games':games})
+            if Game.objects.filter(room_name=room_name).exists():
+                messages.error(request, "❌ Ya existe una sala con ese nombre. Por favor, elige otro.")
+            else:
+                game = Game.objects.create(room_name=room_name, owner=request.user)
+                messages.success(request, f"✅ Sala '{room_name}' creada exitosamente!")
+                return redirect('Games:game_detail', room_name=room_name)
+        else:
+            messages.error(request, "❌ Debes ingresar un nombre para la sala.")
+    
+    return render(request, 'games_list.html', {'games': games})
 
 @login_required
 def game_detail(request, room_name):
     game = get_object_or_404(Game, room_name=room_name)
-    board = list(game.board)
     
+    # Unirse al juego si hay espacio y no es el owner
     if game.player2 is None and request.user != game.owner:
         game.player2 = request.user
         game.save()
+        messages.success(request, f"🎮 Te has unido a la sala como Jugador 2!")
     
+    # Procesar movimiento
     if request.method == "POST" and not game.over:
-        square = int(request.POST.get("square"))
-        success = game.make_move(request.user, square)
-        if success:
-            winner = check_winner(list(game.board))
-            if winner:
-                game.winner = "Jugador 1" if request.user == game.owner else "Jugador 2"
-                game.over = True
-                game.save()
-            
-        board = list(game.board)
-    return render(request, 'games/detail.html', {'game': game, 'board': board, 'user_id': request.user.id})
-
-def check_winner(board):
-    win_patterns = [
-    [0,1,2], [3,4,5], [6,7,8], #filas
-    [0,3,6], [1,4,7], [2,5,8], #columnas
-    [0,4,8], [2,4,6] #diagonales
-    ]
+        try:
+            square = int(request.POST.get("square", -1))
+            if 0 <= square <= 8:
+                success = game.make_move(request.user, square)
+                if success:
+                    # Verificar si el juego terminó después del movimiento
+                    if game.over:
+                        if game.winner:
+                            messages.success(request, f"🎉 ¡{game.winner} gana el juego!")
+                        else:
+                            messages.info(request, "🤝 ¡El juego terminó en empate!")
+                    else:
+                        messages.success(request, "✅ Movimiento realizado!")
+                else:
+                    messages.error(request, "❌ Movimiento inválido. No es tu turno o la casilla está ocupada.")
+            else:
+                messages.error(request, "❌ Movimiento inválido.")
+        except (ValueError, TypeError):
+            messages.error(request, "❌ Error en el movimiento.")
     
-    for pattern in win_patterns:
-        a, b, c = pattern
-        if board[a] != "-" and board[a] == board[b] == board[c]:
-            return True
-    return False
+    # Preparar el tablero para el template
+    board = list(game.board)
+    
+    return render(request, 'games_room.html', {
+        'game': game, 
+        'board': board,
+        'user': request.user
+    })
 
+@login_required
 def delete_game(request, room_name):
     game = get_object_or_404(Game, room_name=room_name)
-    if request.method== "POST":
+    if request.user == game.owner:
+        game_name = game.room_name
         game.delete()
-        return redirect('games:games_list')
-    return redirect('games:game_detail', room_name=room_name)
+        messages.success(request, f"🗑️ Sala '{game_name}' eliminada exitosamente!")
+    else:
+        messages.error(request, "❌ Solo el creador de la sala puede eliminarla.")
+    return redirect('Games:games_list')

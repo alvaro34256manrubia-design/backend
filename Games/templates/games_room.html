@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sala: {{ game.room_name }} - Tic Tac Toe{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-200 mb-8">
+        <div class="flex justify-between items-center mb-4">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">🎮 {{ game.room_name }}</h1>
+                <p class="text-gray-600">
+                    Estado: 
+                    <span class="font-semibold {% if not game.over %}text-green-600{% else %}text-blue-600{% endif %}">
+                        {% if game.winner %}Ganó {{ game.winner }}
+                        {% elif game.over %}Empate
+                        {% else %}En juego{% endif %}
+                    </span>
+                </p>
+            </div>
+            <div class="text-right">
+                <p class="text-sm text-gray-600">Tu eres: <span class="font-semibold">{{ user.username }}</span></p>
+                {% if game.over %}
+                <form method="post" action="{% url 'Games:delete_game' game.room_name %}" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors mt-2 flex items-center space-x-2">
+                        <span>🗑️</span>
+                        <span>Cerrar Sala</span>
+                    </button>
+                </form>
+                {% endif %}
+                <a href="{% url 'Games:games_list' %}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors mt-2 ml-2 inline-block">
+                    ← Volver
+                </a>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+            <div class="{% if game.active_player == 1 and not game.over %}bg-green-50 border-green-300{% else %}bg-blue-50 border-blue-200{% endif %} rounded-lg p-4 border-2 transition-colors">
+                <h3 class="font-semibold {% if game.active_player == 1 and not game.over %}text-green-800{% else %}text-blue-800{% endif %} mb-2 flex items-center">
+                    <span class="text-lg mr-2">👤</span>
+                    Jugador 1 (X) - {{ game.owner.username }}
+                </h3>
+                {% if game.active_player == 1 and not game.over %}
+                <span class="inline-block mt-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                    ✅ Turno Actual
+                </span>
+                {% endif %}
+            </div>
+            
+            <div class="{% if game.active_player == 2 and not game.over %}bg-green-50 border-green-300{% else %}{% if game.player2 %}bg-green-50 border-green-200{% else %}bg-gray-100 border-gray-300{% endif %}{% endif %} rounded-lg p-4 border-2 transition-colors">
+                <h3 class="font-semibold {% if game.active_player == 2 and not game.over %}text-green-800{% else %}{% if game.player2 %}text-green-800{% else %}text-gray-600{% endif %}{% endif %} mb-2 flex items-center">
+                    <span class="text-lg mr-2">👥</span>
+                    Jugador 2 (O) - {% if game.player2 %}{{ game.player2.username }}{% else %}Esperando...{% endif %}
+                </h3>
+                {% if game.active_player == 2 and not game.over %}
+                <span class="inline-block mt-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                    ✅ Turno Actual
+                </span>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if not game.player2 and user != game.owner %}
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
+            <p class="text-yellow-800 font-semibold">⚠️ Eres el jugador 2. Tu símbolo será: ⭕</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-8">
+        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Tablero</h2>
+            
+            {% if not game.over %}
+                <p class="text-center text-lg mb-4">
+                    Turno de: 
+                    <span class="font-bold {% if game.active_player == 1 %}text-blue-600{% else %}text-green-600{% endif %}">
+                        {% if game.active_player == 1 %}
+                            {{ game.owner.username }} (❌)
+                        {% else %}
+                            {% if game.player2 %}{{ game.player2.username }}{% else %}Jugador 2{% endif %} (⭕)
+                        {% endif %}
+                    </span>
+                </p>
+            {% else %}
+                <div class="text-center mb-4 p-4 {% if game.winner %}bg-yellow-50 border-yellow-200{% else %}bg-purple-50 border-purple-200{% endif %} rounded-lg border">
+                    <p class="text-xl font-bold {% if game.winner %}text-yellow-800{% else %}text-purple-800{% endif %}">
+                        {% if game.winner %} 
+                            🎉 ¡{{ game.winner }} gana!
+                        {% else %}
+                            🤝 ¡Empate!
+                        {% endif %}
+                    </p>
+                </div>
+            {% endif %}
+
+            <div class="grid grid-cols-3 gap-3 max-w-md mx-auto mb-6">
+                {% for square in board %}
+                <form method="post" class="aspect-square">
+                    {% csrf_token %}
+                    <input type="hidden" name="square" value="{{ forloop.counter0 }}">
+                    <button type="submit" 
+                            class="w-full h-full border-2 rounded-lg text-4xl font-bold transition-all duration-200
+                                   {% if square == 'X' %}text-blue-600 bg-blue-50 border-blue-300
+                                   {% elif square == 'O' %}text-green-600 bg-green-50 border-green-300
+                                   {% else %}text-gray-400 border-gray-300 hover:bg-gray-50{% endif %}
+                                   {% if game.over or square != '-' %}opacity-50 cursor-not-allowed{% endif %}"
+                            {% if game.over or square != '-' %}disabled{% endif %}
+                            {% if square == '-' and not game.over %}title="Hacer movimiento en posición {{ forloop.counter0 }}"{% endif %}>
+                        {% if square == 'X' %}❌
+                        {% elif square == 'O' %}⭕
+                        {% else %}&nbsp;{% endif %}
+                    </button>
+                </form>
+                {% endfor %}
+            </div>
+
+            <div class="text-center space-y-3">
+                <div class="text-sm text-gray-600">
+                    <p>❌ = Jugador 1 ({{ game.owner.username }}) | ⭕ = Jugador 2 ({% if game.player2 %}{{ game.player2.username }}{% else %}?{% endif %})</p>
+                </div>
+                
+                {% if game.over %}
+                <div class="flex justify-center space-x-4">
+                    <a href="{% url 'Games:games_list' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
+                        🏠 Volver al Listado
+                    </a>
+                    {% if user == game.owner %}
+                    <form method="post" action="{% url 'Games:delete_game' game.room_name %}" class="inline">
+                        {% csrf_token %}
+                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
+                            🗑️ Eliminar Sala
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">📊 Información del Juego</h2>
+            
+            <div class="space-y-4">
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">Estado Actual</h3>
+                    <div class="space-y-2 text-sm">
+                        <p><span class="font-medium">Sala:</span> {{ game.room_name }}</p>
+                        <p><span class="font-medium">Creador:</span> {{ game.owner.username }}</p>
+                        <p><span class="font-medium">Jugador 2:</span> {% if game.player2 %}{{ game.player2.username }}{% else %}Por unirse{% endif %}</p>
+                        <p><span class="font-medium">Turno:</span> 
+                            {% if game.over %}Juego terminado
+                            {% elif game.active_player == 1 %}{{ game.owner.username }} (❌)
+                            {% else %}{% if game.player2 %}{{ game.player2.username }}{% else %}Jugador 2{% endif %} (⭕)
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-blue-800 mb-2">📋 Instrucciones</h3>
+                    <ul class="text-sm text-blue-700 space-y-1">
+                        <li>• Haz clic en una casilla vacía para colocar tu símbolo</li>
+                        <li>• Alterna turnos con el otro jugador</li>
+                        <li>• Gana alinear 3 símbolos iguales</li>
+                        <li>• El juego termina con victoria o empate</li>
+                    </ul>
+                </div>
+
+                {% if not game.over %}
+                <div class="bg-green-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-green-800 mb-2">🎯 Tu Rol</h3>
+                    <p class="text-sm text-green-700">
+                        {% if user == game.owner %}
+                            Eres el <span class="font-bold">Jugador 1 (❌)</span>
+                        {% elif user == game.player2 %}
+                            Eres el <span class="font-bold">Jugador 2 (⭕)</span>
+                        {% else %}
+                            Eres un <span class="font-bold">Espectador</span>
+                        {% endif %}
+                    </p>
+                    {% if not game.player2 and user != game.owner %}
+                    <p class="text-sm text-green-600 mt-1">¡Serás el Jugador 2 cuando te unas!</p>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    {% if not game.over %}
+    setTimeout(function() {
+        window.location.reload();
+    }, 5000);
+    {% endif %}
+
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const buttons = document.querySelectorAll('button[type="submit"]');
+        buttons.forEach(button => {
+            if (!button.disabled) {
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                });
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}
