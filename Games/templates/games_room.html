@@ -256,8 +256,8 @@
     };
 
     document.querySelectorAll('#square').forEach(btn => {
-    btn.onclick = function(e) {
-        e.preventDefault();
+    btn.onclick = function(event) {
+        event.preventDefault();
         if (gameSocket.readyState === WebSocket.OPEN) {
             gameSocket.send(JSON.stringify({
                 'move': btn.value,
