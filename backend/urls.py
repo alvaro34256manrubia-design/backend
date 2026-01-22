@@ -36,6 +36,8 @@ urlpatterns = [
     path('users/', include('Users.urls')),
     path('productos/', include('Productos.urls')),
     path('Games/', include('Games.urls')),
+    path('Api/', include('Api.urls')),
+    
     
 ]
 urlpatterns += static(settings.MEDIA_URL,

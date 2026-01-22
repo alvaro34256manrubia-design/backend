@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'django_browser_reload',
     'Games',
     'channels',
+    'Api',
+    'rest_framework',
     
     
 ]
