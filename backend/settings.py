@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'channels',
     'Api',
     'rest_framework',
+    'dog_api',
     
     
 ]

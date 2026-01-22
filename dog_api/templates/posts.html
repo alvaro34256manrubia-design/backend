@@ -1,0 +1,24 @@
+<!-- external_api/templates/external_api/posts.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Posts de API</title>
+    <style>
+        .post { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .post-title { color: #333; font-size: 1.2em; }
+        .post-id { background: #007bff; color: white; padding: 2px 8px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <h1>📚 Posts de API Externa ({{ total_posts }} posts)</h1>
+    
+    {% for post in posts %}
+    <div class="post">
+        <span class="post-id">#{{ post.id }}</span>
+        <h2 class="post-title">{{ post.title|title }}</h2>
+        <p>{{ post.body }}</p>
+        <small>Usuario ID: {{ post.userId }}</small>
+    </div>
+    {% endfor %}
+</body>
+</html>

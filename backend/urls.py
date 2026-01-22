@@ -37,6 +37,7 @@ urlpatterns = [
     path('productos/', include('Productos.urls')),
     path('Games/', include('Games.urls')),
     path('Api/', include('Api.urls')),
+    path('dog_api/', include('dog_api.urls')),
     
     
 ]

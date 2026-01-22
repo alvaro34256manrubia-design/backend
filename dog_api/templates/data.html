@@ -1,0 +1,22 @@
+<!-- external_api/templates/external_api/data.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Datos de API Externa</title>
+</head>
+<body>
+    <h1>📡 Datos de API Externa</h1>
+    
+    <div style="background: #f5f5f5; padding: 20px; border-radius: 10px;">
+        <h2>Título: {{ title }}</h2>
+        <p><strong>Código de estado:</strong> {{ status_code }}</p>
+        <p><strong>Contenido:</strong></p>
+        <p>{{ body }}</p>
+        
+        <h3>Datos completos en JSON:</h3>
+        <pre>{{ api_data|pprint }}</pre>
+    </div>
+    
+    <a href="./posts/">Ver múltiples posts</a>
+</body>
+</html>
